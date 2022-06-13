@@ -14,6 +14,15 @@ func (h *Handler) singUp(gctx *gin.Context) {
 		NewErrorResponse(gctx, http.StatusBadRequest, err.Error())
 		return
 	}
+
+	id, err := h.service.Authorization.CreateUser(input)
+	if err != nil {
+		NewErrorResponse(gctx, http.StatusInternalServerError, err.Error())
+	}
+
+	gctx.JSON(http.StatusOK, map[string]interface{}{
+		"id": id,
+	})
 }
 
 func (h *Handler) singIn(ctx *gin.Context) {
