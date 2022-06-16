@@ -57,7 +57,7 @@ func (h *Handler) getListById(gctx *gin.Context) {
 		return
 	}
 
-	id, err := strconv.Atoi(gctx.Param("id"))
+	id, err := strconv.Atoi(gctx.Param("id")) //getting params from uri
 	if err != nil {
 		NewErrorResponse(gctx, http.StatusBadRequest, "invalid id parametr")
 		return
@@ -73,9 +73,51 @@ func (h *Handler) getListById(gctx *gin.Context) {
 }
 
 func (h *Handler) updateList(gctx *gin.Context) {
+	UserId, err := getUserId(gctx)
+	if err != nil {
+		return
+	}
 
+	id, err := strconv.Atoi(gctx.Param("id")) //getting params from uri
+	if err != nil {
+		NewErrorResponse(gctx, http.StatusBadRequest, "invalid id parametr")
+		return
+	}
+
+	var input todo.UpdateTodoListInput
+	if err := gctx.BindJSON(&input); err != nil {
+		NewErrorResponse(gctx, http.StatusBadRequest, "invalid params to update")
+		return
+	}
+
+	if err := h.service.TodoList.Update(UserId, id, input); err != nil {
+		NewErrorResponse(gctx, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	gctx.JSON(http.StatusOK, statusResponse{
+		Status: "ok",
+	})
 }
 
 func (h *Handler) deleteList(gctx *gin.Context) {
+	UserId, err := getUserId(gctx)
+	if err != nil {
+		return
+	}
 
+	id, err := strconv.Atoi(gctx.Param("id"))
+	if err != nil {
+		NewErrorResponse(gctx, http.StatusBadRequest, "invalid id parametr")
+		return
+	}
+
+	if err := h.service.TodoList.Delete(UserId, id); err != nil {
+		NewErrorResponse(gctx, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	gctx.JSON(http.StatusOK, statusResponse{
+		Status: "ok",
+	})
 }
