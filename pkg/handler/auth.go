@@ -25,6 +25,25 @@ func (h *Handler) singUp(gctx *gin.Context) {
 	})
 }
 
-func (h *Handler) singIn(ctx *gin.Context) {
+type SingInInput struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
 
+func (h *Handler) singIn(gctx *gin.Context) {
+	var input SingInInput
+
+	if err := gctx.BindJSON(&input); err != nil {
+		NewErrorResponse(gctx, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	toker, err := h.service.Authorization.GenerateToken(input.Username, input.Password)
+	if err != nil {
+		NewErrorResponse(gctx, http.StatusInternalServerError, err.Error())
+	}
+
+	gctx.JSON(http.StatusOK, map[string]interface{}{
+		"toker": toker,
+	})
 }

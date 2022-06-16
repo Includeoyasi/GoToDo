@@ -25,3 +25,10 @@ func (r *AuthPostgres) CreateUser(user todo.User) (int, error) {
 	}
 	return id, nil
 }
+
+func (r *AuthPostgres) GetUser(username, password string) (todo.User, error) {
+	var user todo.User
+	query := fmt.Sprintf("SELECT id FROM %s WHERE username='%s' AND password_hash='%s'", usersTable, username, password)
+	err := r.db.Get(&user, query)
+	return user, err
+}
