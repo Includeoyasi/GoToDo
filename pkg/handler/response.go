@@ -13,7 +13,3 @@ func NewErrorResponse(gctx *gin.Context, statusCode int, message string) {
 	logrus.Error(message)
 	gctx.AbortWithStatusJSON(statusCode, errorResponse{Message: message})
 }
-
-type statusResponse struct {
-	Status string `json:"status"`
-}

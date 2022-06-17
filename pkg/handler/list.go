@@ -9,7 +9,7 @@ import (
 )
 
 func (h *Handler) createList(gctx *gin.Context) {
-	UserId, err := getUserId(gctx)
+	userId, err := getUserId(gctx)
 	if err != nil {
 		return
 	}
@@ -20,7 +20,7 @@ func (h *Handler) createList(gctx *gin.Context) {
 		return
 	}
 
-	id, err := h.service.TodoList.Create(UserId, input)
+	id, err := h.service.TodoList.Create(userId, input)
 	if err != nil {
 		NewErrorResponse(gctx, http.StatusInternalServerError, err.Error())
 		return
@@ -35,12 +35,12 @@ type getAllListResponse struct {
 }
 
 func (h *Handler) getAllList(gctx *gin.Context) {
-	UserId, err := getUserId(gctx)
+	userId, err := getUserId(gctx)
 	if err != nil {
 		return
 	}
 
-	lists, err := h.service.TodoList.GetAll(UserId)
+	lists, err := h.service.TodoList.GetAll(userId)
 	if err != nil {
 		NewErrorResponse(gctx, http.StatusInternalServerError, err.Error())
 		return
@@ -52,18 +52,18 @@ func (h *Handler) getAllList(gctx *gin.Context) {
 }
 
 func (h *Handler) getListById(gctx *gin.Context) {
-	UserId, err := getUserId(gctx)
+	userId, err := getUserId(gctx)
 	if err != nil {
 		return
 	}
 
-	id, err := strconv.Atoi(gctx.Param("id")) //getting params from uri
+	id, err := strconv.Atoi(gctx.Param("id"))
 	if err != nil {
 		NewErrorResponse(gctx, http.StatusBadRequest, "invalid id parametr")
 		return
 	}
 
-	list, err := h.service.TodoList.GetById(UserId, id)
+	list, err := h.service.TodoList.GetById(userId, id)
 	if err != nil {
 		NewErrorResponse(gctx, http.StatusInternalServerError, err.Error())
 		return
@@ -73,12 +73,12 @@ func (h *Handler) getListById(gctx *gin.Context) {
 }
 
 func (h *Handler) updateList(gctx *gin.Context) {
-	UserId, err := getUserId(gctx)
+	userId, err := getUserId(gctx)
 	if err != nil {
 		return
 	}
 
-	id, err := strconv.Atoi(gctx.Param("id")) //getting params from uri
+	id, err := strconv.Atoi(gctx.Param("id"))
 	if err != nil {
 		NewErrorResponse(gctx, http.StatusBadRequest, "invalid id parametr")
 		return
@@ -90,18 +90,18 @@ func (h *Handler) updateList(gctx *gin.Context) {
 		return
 	}
 
-	if err := h.service.TodoList.Update(UserId, id, input); err != nil {
+	if err := h.service.TodoList.Update(userId, id, input); err != nil {
 		NewErrorResponse(gctx, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	gctx.JSON(http.StatusOK, statusResponse{
-		Status: "ok",
+	gctx.JSON(http.StatusOK, map[string]interface{}{
+		"status": "ok",
 	})
 }
 
 func (h *Handler) deleteList(gctx *gin.Context) {
-	UserId, err := getUserId(gctx)
+	userId, err := getUserId(gctx)
 	if err != nil {
 		return
 	}
@@ -112,12 +112,12 @@ func (h *Handler) deleteList(gctx *gin.Context) {
 		return
 	}
 
-	if err := h.service.TodoList.Delete(UserId, id); err != nil {
+	if err := h.service.TodoList.Delete(userId, id); err != nil {
 		NewErrorResponse(gctx, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	gctx.JSON(http.StatusOK, statusResponse{
-		Status: "ok",
+	gctx.JSON(http.StatusOK, map[string]interface{}{
+		"status": "ok",
 	})
 }
